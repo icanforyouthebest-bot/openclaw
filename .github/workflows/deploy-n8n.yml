@@ -1,0 +1,40 @@
+name: Deploy n8n Workflows
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'n8n-workflows/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy workflows to n8n
+        run: |
+          for file in n8n-workflows/*.json; do
+            if [ -f "$file" ]; then
+              WORKFLOW_ID=$(jq -r '.id' "$file")
+              echo "Deploying $file (ID: $WORKFLOW_ID)"
+              # Try to update existing workflow, create if not found
+              STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+                -X PUT "${{ secrets.N8N_URL }}/api/v1/workflows/$WORKFLOW_ID" \
+                -H "X-N8N-API-KEY: ${{ secrets.N8N_API_KEY }}" \
+                -H "Content-Type: application/json" \
+                -d @"$file")
+              if [ "$STATUS" = "404" ]; then
+                echo "Workflow not found, creating new..."
+                curl -s -X POST "${{ secrets.N8N_URL }}/api/v1/workflows" \
+                  -H "X-N8N-API-KEY: ${{ secrets.N8N_API_KEY }}" \
+                  -H "Content-Type: application/json" \
+                  -d @"$file"
+              fi
+              echo "Done ($STATUS)"
+            fi
+          done
+        env:
+          N8N_URL: ${{ secrets.N8N_URL }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
