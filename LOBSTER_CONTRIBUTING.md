@@ -2,11 +2,11 @@
 
 ## Quick Start
 1. Clone: `git clone https://github.com/icanforyouthebest-bot/openclaw.git`
-2. Switch to develop: `git checkout develop`
-3. Create your feature branch from develop: `git checkout -b feat/<domain>/<name>`
+2. Ensure you're on main: `git checkout main`
+3. Create your feature branch from main: `git checkout -b feat/<domain>/<name>`
 4. Work only in your assigned directories
 5. Commit with convention: `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`
-6. Push and open PR to `develop`
+6. Push and open PR to `main`
 7. Wait for Tech Lead review and merge
 
 ## Rules
@@ -22,9 +22,6 @@ git fetch upstream
 git checkout main
 git merge upstream/main
 git push origin main
-git checkout develop
-git merge main
-git push origin develop
 ```
 
 ## Team Directory Ownership
